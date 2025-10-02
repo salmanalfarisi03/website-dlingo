@@ -9,15 +9,13 @@
     <style>
       body {
         font-family: "Helvetica", sans-serif;
+        background-color: #e6ebf5;
       }
       .navy-text {
         color: #0b3d91;
       }
       .navy-bg {
         background-color: #0b3d91;
-      }
-      .light-navy-bg {
-        background-color: #e6ebf5;
       }
       .stamp-lunas {
         color: #ff0000;
@@ -30,9 +28,12 @@
       .total-black {
         color: #000000;
       }
+      /* Table agar PDF rapi */
       table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed;
+        word-wrap: break-word;
       }
       th,
       td {
@@ -47,12 +48,13 @@
       }
     </style>
   </head>
-  <body class="bg-light-navy-bg p-4 sm:p-8">
+  <body class="p-4 sm:p-8">
     <div class="max-w-6xl mx-auto mb-6">
       <h2 class="text-2xl sm:text-3xl font-bold mb-4 navy-text">
         Isi Invoice Toko Hijab Dlingoscarves
       </h2>
 
+      <!-- Input Info -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <input
           type="text"
@@ -80,6 +82,7 @@
         />
       </div>
 
+      <!-- Produk -->
       <h3 class="font-semibold mb-2 navy-text">Produk Hijab</h3>
       <div id="itemsContainer" class="mb-4">
         <div class="flex flex-wrap gap-2 mb-2">
@@ -118,6 +121,7 @@
       </button>
     </div>
 
+    <!-- Buttons -->
     <div
       class="text-center mb-6 flex flex-col sm:flex-row justify-center gap-2"
     >
@@ -135,16 +139,19 @@
       </button>
     </div>
 
+    <!-- Invoice Preview -->
     <div
       id="invoicePreview"
-      class="max-w-6xl mx-auto bg-white p-4 sm:p-8 shadow-2xl rounded-lg relative"
+      class="max-w-[210mm] mx-auto bg-white p-4 sm:p-8 shadow-2xl rounded-lg relative"
     >
+      <!-- Watermark -->
       <div
         class="absolute inset-0 flex justify-center items-center pointer-events-none opacity-5"
       >
         <img src="img/dlingo.jpeg" alt="Watermark" class="w-64 sm:w-96" />
       </div>
 
+      <!-- Header -->
       <div
         class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-4 border-black pb-4 mb-6 relative z-10"
       >
@@ -162,6 +169,7 @@
         </div>
       </div>
 
+      <!-- Billing Info -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative z-10">
         <div>
           <h2 class="font-semibold navy-text">Bill To:</h2>
@@ -175,6 +183,7 @@
         </div>
       </div>
 
+      <!-- Table -->
       <div class="overflow-x-auto mb-6">
         <table class="w-full text-sm">
           <thead class="bg-blue-100">
@@ -191,6 +200,7 @@
         </table>
       </div>
 
+      <!-- Total + LUNAS -->
       <div class="flex flex-col items-end relative z-10">
         <div class="text-right mb-4">
           <p class="font-semibold mt-2">
@@ -205,6 +215,7 @@
         </div>
       </div>
 
+      <!-- Footer -->
       <p class="mt-6 text-gray-700 relative z-10 text-sm sm:text-base">
         Thank you for your order.<br />
         Pembayaran dapat dilakukan ke:<br />
@@ -216,6 +227,8 @@
     <script>
       const addItemBtn = document.getElementById("addItem");
       const itemsContainer = document.getElementById("itemsContainer");
+
+      // Nomor invoice otomatis
       let lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber") || "0";
       function getNextInvoiceNumber() {
         let nextNumber = parseInt(lastInvoiceNumber) + 1;
@@ -223,16 +236,17 @@
         localStorage.setItem("lastInvoiceNumber", lastInvoiceNumber);
         return "INC-" + String(nextNumber).padStart(3, "0");
       }
+
       addItemBtn.addEventListener("click", () => {
         const div = document.createElement("div");
         div.className = "flex flex-wrap gap-2 mb-2";
         div.innerHTML = `
-    <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
-    <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
-    <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
-    <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
-    <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
-  `;
+          <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
+          <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
+          <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
+          <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
+          <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
+        `;
         itemsContainer.appendChild(div);
       });
 
@@ -269,13 +283,13 @@
           const tr = document.createElement("tr");
           tr.className = i % 2 === 0 ? "bg-light-navy-bg" : "";
           tr.innerHTML = `
-      <td>${name}</td>
-      <td>${color}</td>
-      <td class="text-right">${qty}</td>
-      <td class="text-right">Rp${price.toLocaleString()}</td>
-      <td class="text-right">Rp${ongkir.toLocaleString()}</td>
-      <td class="text-right">Rp${total.toLocaleString()}</td>
-    `;
+            <td>${name}</td>
+            <td>${color}</td>
+            <td class="text-right">${qty}</td>
+            <td class="text-right">Rp${price.toLocaleString()}</td>
+            <td class="text-right">Rp${ongkir.toLocaleString()}</td>
+            <td class="text-right">Rp${total.toLocaleString()}</td>
+          `;
           tbody.appendChild(tr);
         }
 
@@ -283,19 +297,17 @@
           "Rp" + subtotal.toLocaleString();
         document.getElementById("total").textContent =
           "Rp" + subtotal.toLocaleString();
-
-        const stamp = document.getElementById("stampLunas");
         showLunas
-          ? stamp.classList.remove("hidden")
-          : stamp.classList.add("hidden");
+          ? document.getElementById("stampLunas").classList.remove("hidden")
+          : document.getElementById("stampLunas").classList.add("hidden");
 
         const invoice = document.getElementById("invoicePreview");
         const opt = {
-          margin: 0.5,
+          margin: 5,
           filename: filename,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, width: invoice.scrollWidth },
-          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          image: { type: "jpeg", quality: 1 },
+          html2canvas: { scale: 3, width: invoice.scrollWidth },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
         html2pdf().set(opt).from(invoice).save();
       }
