@@ -30,15 +30,30 @@
       .total-black {
         color: #000000;
       }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      @media print {
+        body {
+          zoom: 0.8;
+        }
+      }
     </style>
   </head>
-  <body class="bg-light-navy-bg p-8">
+  <body class="bg-light-navy-bg p-4 sm:p-8">
     <div class="max-w-6xl mx-auto mb-6">
-      <h2 class="text-3xl font-bold mb-4 navy-text">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-4 navy-text">
         Isi Invoice Toko Hijab Dlingoscarves
       </h2>
 
-      <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           id="billName"
@@ -67,31 +82,31 @@
 
       <h3 class="font-semibold mb-2 navy-text">Produk Hijab</h3>
       <div id="itemsContainer" class="mb-4">
-        <div class="flex gap-2 mb-2">
+        <div class="flex flex-wrap gap-2 mb-2">
           <input
             type="text"
             placeholder="Jenis Hijab"
-            class="border px-3 py-2 rounded w-1/3 item-name"
+            class="border px-3 py-2 rounded w-full sm:w-1/4 item-name"
           />
           <input
             type="text"
             placeholder="Warna / Motif"
-            class="border px-3 py-2 rounded w-1/3 item-color"
+            class="border px-3 py-2 rounded w-full sm:w-1/4 item-color"
           />
           <input
             type="number"
             placeholder="Jumlah"
-            class="border px-3 py-2 rounded w-1/6 item-qty"
+            class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty"
           />
           <input
             type="number"
             placeholder="Harga (Rp)"
-            class="border px-3 py-2 rounded w-1/6 item-price"
+            class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price"
           />
           <input
-            type="ongkir"
+            type="number"
             placeholder="Ongkir (Rp)"
-            class="border px-3 py-2 rounded w-1/6 item-price"
+            class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir"
           />
         </div>
       </div>
@@ -103,10 +118,12 @@
       </button>
     </div>
 
-    <div class="text-center mb-6">
+    <div
+      class="text-center mb-6 flex flex-col sm:flex-row justify-center gap-2"
+    >
       <button
         id="generateInvoiceTagihan"
-        class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800 mr-2"
+        class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800"
       >
         Generate PDF Tagihan
       </button>
@@ -118,84 +135,77 @@
       </button>
     </div>
 
-    <!-- Invoice Preview -->
     <div
       id="invoicePreview"
-      class="max-w-6xl mx-auto bg-white p-8 shadow-2xl rounded-lg relative"
+      class="max-w-6xl mx-auto bg-white p-4 sm:p-8 shadow-2xl rounded-lg relative"
     >
-      <!-- Watermark -->
       <div
         class="absolute inset-0 flex justify-center items-center pointer-events-none opacity-5"
       >
-        <img src="img/dlingo.jpeg" alt="Watermark" class="w-96" />
+        <img src="img/dlingo.jpeg" alt="Watermark" class="w-64 sm:w-96" />
       </div>
 
-      <!-- Header -->
       <div
-        class="flex justify-between items-center border-b-4 border-black pb-4 mb-6 relative z-10"
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-4 border-black pb-4 mb-6 relative z-10"
       >
-        <div class="flex items-center gap-4">
-          <img src="img/dlingo.jpeg" alt="Logo Toko" class="h-20" />
+        <div class="flex items-center gap-4 mb-4 sm:mb-0">
+          <img src="img/dlingo.jpeg" alt="Logo Toko" class="h-16 sm:h-20" />
           <div>
-            <h1 class="text-3xl font-bold navy-text">INVOICE</h1>
-            <p class="text-gray-600 mt-1" id="invoiceNumber">#INV-001</p>
+            <h1 class="text-2xl sm:text-3xl font-bold navy-text">INVOICE</h1>
+            <p class="text-gray-600 mt-1" id="invoiceNumber">INC-001</p>
           </div>
         </div>
-        <div class="text-right text-sm text-gray-700">
+        <div class="text-left sm:text-right text-sm text-gray-700">
           <p>Toko Hijab Dlingoscarves</p>
           <p>Jakarta</p>
           <p>Instagram: @Dlingoscarves</p>
         </div>
       </div>
 
-      <!-- Billing Info -->
-      <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative z-10">
         <div>
           <h2 class="font-semibold navy-text">Bill To:</h2>
-          <p id="previewName">Nama Penerima</p>
-          <p id="previewAddress">Alamat Penerima</p>
+          <p id="previewName">Nama Penerima:</p>
+          <p id="previewAddress">Alamat Penerima:</p>
         </div>
         <div>
           <h2 class="font-semibold navy-text">Invoice Info:</h2>
-          <p id="previewDate">Tanggal</p>
-          <p id="previewDue">Due Date</p>
+          <p id="previewDate">Invoice Tanggal:</p>
+          <p id="previewDue">Invoice Due Date:</p>
         </div>
       </div>
 
-      <!-- Table Produk -->
-      <table class="w-full border-collapse mb-6 text-sm relative z-10">
-        <thead class="bg-blue-100">
-          <tr>
-            <th class="border px-4 py-2 text-left">Nama Hijab</th>
-            <th class="border px-4 py-2 text-left">Warna / Motif</th>
-            <th class="border px-4 py-2 text-right">Jumlah</th>
-            <th class="border px-4 py-2 text-right">Harga</th>
-            <th class="border px-4 py-2 text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody id="previewTable"></tbody>
-      </table>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm">
+          <thead class="bg-blue-100">
+            <tr>
+              <th>Nama Hijab</th>
+              <th>Warna / Motif</th>
+              <th>Jumlah</th>
+              <th>Harga</th>
+              <th>Ongkir</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="previewTable"></tbody>
+        </table>
+      </div>
 
-      <!-- Total + Stempel LUNAS -->
       <div class="flex flex-col items-end relative z-10">
         <div class="text-right mb-4">
           <p class="font-semibold mt-2">
             Subtotal: <span id="subtotal">0</span>
           </p>
-          <p class="font-semibold mt-4">Ongkir: <span id="ongkir">0</span></p>
           <p class="font-bold text-xl total-black mt-4">
             Total: <span id="total">0</span>
           </p>
         </div>
-
-        <!-- Stempel LUNAS -->
         <div id="stampLunas" class="text-right mb-4 hidden">
           <span class="stamp-lunas">LUNAS</span>
         </div>
       </div>
 
-      <!-- Footer -->
-      <p class="mt-6 text-gray-700 relative z-10">
+      <p class="mt-6 text-gray-700 relative z-10 text-sm sm:text-base">
         Thank you for your order.<br />
         Pembayaran dapat dilakukan ke:<br />
         Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih<br />
@@ -206,20 +216,29 @@
     <script>
       const addItemBtn = document.getElementById("addItem");
       const itemsContainer = document.getElementById("itemsContainer");
-
+      let lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber") || "0";
+      function getNextInvoiceNumber() {
+        let nextNumber = parseInt(lastInvoiceNumber) + 1;
+        lastInvoiceNumber = nextNumber;
+        localStorage.setItem("lastInvoiceNumber", lastInvoiceNumber);
+        return "INC-" + String(nextNumber).padStart(3, "0");
+      }
       addItemBtn.addEventListener("click", () => {
         const div = document.createElement("div");
-        div.className = "flex gap-2 mb-2";
+        div.className = "flex flex-wrap gap-2 mb-2";
         div.innerHTML = `
-          <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-1/3 item-name">
-          <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-1/3 item-color">
-          <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/6 item-qty">
-          <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/6 item-price">
-        `;
+    <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
+    <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
+    <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
+    <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
+    <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
+  `;
         itemsContainer.appendChild(div);
       });
 
       function generatePDF(filename, showLunas) {
+        document.getElementById("invoiceNumber").textContent =
+          getNextInvoiceNumber();
         document.getElementById("previewName").textContent =
           document.getElementById("billName").value || "Nama Penerima";
         document.getElementById("previewAddress").textContent =
@@ -236,46 +255,46 @@
         const colors = document.querySelectorAll(".item-color");
         const qtys = document.querySelectorAll(".item-qty");
         const prices = document.querySelectorAll(".item-price");
+        const ongkirs = document.querySelectorAll(".item-ongkir");
 
         for (let i = 0; i < names.length; i++) {
           const name = names[i].value || "-";
           const color = colors[i].value || "-";
           const qty = parseFloat(qtys[i].value) || 0;
           const price = parseFloat(prices[i].value) || 0;
-          const total = qty * price;
+          const ongkir = parseFloat(ongkirs[i].value) || 0;
+          const total = qty * price + ongkir;
           subtotal += total;
 
           const tr = document.createElement("tr");
           tr.className = i % 2 === 0 ? "bg-light-navy-bg" : "";
           tr.innerHTML = `
-            <td class="border px-4 py-2">${name}</td>
-            <td class="border px-4 py-2">${color}</td>
-            <td class="border px-4 py-2 text-right">${qty}</td>
-            <td class="border px-4 py-2 text-right">Rp${price.toLocaleString()}</td>
-            <td class="border px-4 py-2 text-right">Rp${total.toLocaleString()}</td>
-          `;
+      <td>${name}</td>
+      <td>${color}</td>
+      <td class="text-right">${qty}</td>
+      <td class="text-right">Rp${price.toLocaleString()}</td>
+      <td class="text-right">Rp${ongkir.toLocaleString()}</td>
+      <td class="text-right">Rp${total.toLocaleString()}</td>
+    `;
           tbody.appendChild(tr);
         }
 
-        const total = subtotal;
         document.getElementById("subtotal").textContent =
           "Rp" + subtotal.toLocaleString();
         document.getElementById("total").textContent =
-          "Rp" + total.toLocaleString();
+          "Rp" + subtotal.toLocaleString();
 
         const stamp = document.getElementById("stampLunas");
-        if (showLunas) {
-          stamp.classList.remove("hidden");
-        } else {
-          stamp.classList.add("hidden");
-        }
+        showLunas
+          ? stamp.classList.remove("hidden")
+          : stamp.classList.add("hidden");
 
         const invoice = document.getElementById("invoicePreview");
         const opt = {
           margin: 0.5,
           filename: filename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
+          html2canvas: { scale: 2, width: invoice.scrollWidth },
           jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         };
         html2pdf().set(opt).from(invoice).save();
@@ -283,15 +302,10 @@
 
       document
         .getElementById("generateInvoiceTagihan")
-        .addEventListener("click", () => {
-          generatePDF("Tagihan.pdf", false);
-        });
-
+        .addEventListener("click", () => generatePDF("Tagihan.pdf", false));
       document
         .getElementById("generateInvoicePelunasan")
-        .addEventListener("click", () => {
-          generatePDF("Pelunasan.pdf", true);
-        });
+        .addEventListener("click", () => generatePDF("Pelunasan.pdf", true));
     </script>
   </body>
 </html>
