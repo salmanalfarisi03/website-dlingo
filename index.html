@@ -308,6 +308,7 @@
             image: { type: "jpeg", quality: 1 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak: { mode: "avoid-all" }, // Fitur multi-halaman diaktifkan
           })
           .from(document.getElementById("invoicePreview"))
           .save();
