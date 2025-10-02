@@ -26,9 +26,8 @@
         display: inline-block;
       }
       .total-black {
-        color: #000000;
+        color: #000;
       }
-      /* Table agar PDF rapi */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -41,10 +40,8 @@
         padding: 0.5rem;
         text-align: left;
       }
-      @media print {
-        body {
-          zoom: 0.8;
-        }
+      input {
+        outline: none;
       }
     </style>
   </head>
@@ -54,7 +51,6 @@
         Isi Invoice Toko Hijab Dlingoscarves
       </h2>
 
-      <!-- Input Info -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <input
           type="text"
@@ -82,7 +78,6 @@
         />
       </div>
 
-      <!-- Produk -->
       <h3 class="font-semibold mb-2 navy-text">Produk Hijab</h3>
       <div id="itemsContainer" class="mb-4">
         <div class="flex flex-wrap gap-2 mb-2">
@@ -114,6 +109,7 @@
         </div>
       </div>
       <button
+        type="button"
         id="addItem"
         class="mb-4 navy-bg text-white px-4 py-2 rounded hover:bg-blue-800"
       >
@@ -121,17 +117,18 @@
       </button>
     </div>
 
-    <!-- Buttons -->
     <div
       class="text-center mb-6 flex flex-col sm:flex-row justify-center gap-2"
     >
       <button
+        type="button"
         id="generateInvoiceTagihan"
         class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800"
       >
         Generate PDF Tagihan
       </button>
       <button
+        type="button"
         id="generateInvoicePelunasan"
         class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800"
       >
@@ -139,28 +136,17 @@
       </button>
     </div>
 
-    <!-- Invoice Preview -->
     <div
       id="invoicePreview"
       class="max-w-[210mm] mx-auto bg-white p-4 sm:p-8 shadow-2xl rounded-lg relative"
     >
-      <!-- Watermark -->
       <div
-        class="absolute inset-0 flex justify-center items-center pointer-events-none opacity-5"
-      >
-        <img src="img/dlingo.jpeg" alt="Watermark" class="w-64 sm:w-96" />
-      </div>
-
-      <!-- Header -->
-      <div
-        class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-4 border-black pb-4 mb-6 relative z-10"
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-4 border-black pb-4 mb-6"
       >
         <div class="flex items-center gap-4 mb-4 sm:mb-0">
-          <img src="img/dlingo.jpeg" alt="Logo Toko" class="h-16 sm:h-20" />
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-bold navy-text">INVOICE</h1>
-            <p class="text-gray-600 mt-1" id="invoiceNumber">INC-001</p>
-          </div>
+          <img src="img/dlingo.jpeg" alt="Logo Toko" class="h-12" />
+          <h1 class="text-2xl sm:text-3xl font-bold navy-text">INVOICE</h1>
+          <p class="text-gray-600 mt-1" id="invoiceNumber">INC-001</p>
         </div>
         <div class="text-left sm:text-right text-sm text-gray-700">
           <p>Toko Hijab Dlingoscarves</p>
@@ -169,23 +155,21 @@
         </div>
       </div>
 
-      <!-- Billing Info -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 relative z-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div>
           <h2 class="font-semibold navy-text">Bill To:</h2>
-          <p id="previewName">Nama Penerima:</p>
-          <p id="previewAddress">Alamat Penerima:</p>
+          <p>Nama Penerima: <span id="previewName">-</span></p>
+          <p>Alamat Penerima: <span id="previewAddress">-</span></p>
         </div>
         <div>
           <h2 class="font-semibold navy-text">Invoice Info:</h2>
-          <p id="previewDate">Invoice Tanggal:</p>
-          <p id="previewDue">Invoice Due Date:</p>
+          <p>Invoice Tanggal: <span id="previewDate">-</span></p>
+          <p>Invoice Due: <span id="previewDue">-</span></p>
         </div>
       </div>
 
-      <!-- Table -->
       <div class="overflow-x-auto mb-6">
-        <table class="w-full text-sm">
+        <table>
           <thead class="bg-blue-100">
             <tr>
               <th>Nama Hijab</th>
@@ -200,23 +184,17 @@
         </table>
       </div>
 
-      <!-- Total + LUNAS -->
-      <div class="flex flex-col items-end relative z-10">
-        <div class="text-right mb-4">
-          <p class="font-semibold mt-2">
-            Subtotal: <span id="subtotal">0</span>
-          </p>
-          <p class="font-bold text-xl total-black mt-4">
-            Total: <span id="total">0</span>
-          </p>
-        </div>
-        <div id="stampLunas" class="text-right mb-4 hidden">
+      <div class="flex flex-col items-end">
+        <p class="font-semibold mt-2">Subtotal: <span id="subtotal">0</span></p>
+        <p class="font-bold text-xl total-black mt-4">
+          Total: <span id="total">0</span>
+        </p>
+        <div id="stampLunas" class="hidden">
           <span class="stamp-lunas">LUNAS</span>
         </div>
       </div>
 
-      <!-- Footer -->
-      <p class="mt-6 text-gray-700 relative z-10 text-sm sm:text-base">
+      <p class="mt-6 text-gray-700 text-sm sm:text-base">
         Thank you for your order.<br />
         Pembayaran dapat dilakukan ke:<br />
         Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih<br />
@@ -227,9 +205,8 @@
     <script>
       const addItemBtn = document.getElementById("addItem");
       const itemsContainer = document.getElementById("itemsContainer");
-
-      // Nomor invoice otomatis
       let lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber") || "0";
+
       function getNextInvoiceNumber() {
         let nextNumber = parseInt(lastInvoiceNumber) + 1;
         lastInvoiceNumber = nextNumber;
@@ -237,30 +214,54 @@
         return "INC-" + String(nextNumber).padStart(3, "0");
       }
 
+      // Tambah item
       addItemBtn.addEventListener("click", () => {
         const div = document.createElement("div");
         div.className = "flex flex-wrap gap-2 mb-2";
         div.innerHTML = `
-          <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
-          <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
-          <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
-          <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
-          <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
-        `;
+    <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
+    <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
+    <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
+    <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
+    <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
+  `;
         itemsContainer.appendChild(div);
       });
 
-      function generatePDF(filename, showLunas) {
-        document.getElementById("invoiceNumber").textContent =
-          getNextInvoiceNumber();
+      // Fungsi update preview
+      function updatePreview() {
         document.getElementById("previewName").textContent =
-          document.getElementById("billName").value || "Nama Penerima";
+          document.getElementById("billName").value || "-";
         document.getElementById("previewAddress").textContent =
-          document.getElementById("billAddress").value || "Alamat Penerima";
+          document.getElementById("billAddress").value || "-";
         document.getElementById("previewDate").textContent =
           document.getElementById("invoiceDate").value || "-";
         document.getElementById("previewDue").textContent =
           document.getElementById("dueDate").value || "-";
+      }
+
+      // Realtime update
+      document
+        .getElementById("billName")
+        .addEventListener("input", updatePreview);
+      document
+        .getElementById("billAddress")
+        .addEventListener("input", updatePreview);
+      document
+        .getElementById("invoiceDate")
+        .addEventListener("input", updatePreview);
+      document
+        .getElementById("dueDate")
+        .addEventListener("input", updatePreview);
+
+      // Jalankan saat load supaya preview muncul langsung
+      updatePreview();
+
+      // Generate PDF
+      function generatePDF(filename, showLunas) {
+        updatePreview();
+        document.getElementById("invoiceNumber").textContent =
+          getNextInvoiceNumber();
 
         const tbody = document.getElementById("previewTable");
         tbody.innerHTML = "";
@@ -272,24 +273,23 @@
         const ongkirs = document.querySelectorAll(".item-ongkir");
 
         for (let i = 0; i < names.length; i++) {
-          const name = names[i].value || "-";
-          const color = colors[i].value || "-";
-          const qty = parseFloat(qtys[i].value) || 0;
-          const price = parseFloat(prices[i].value) || 0;
-          const ongkir = parseFloat(ongkirs[i].value) || 0;
-          const total = qty * price + ongkir;
+          const n = names[i].value || "-";
+          const c = colors[i].value || "-";
+          const q = parseFloat(qtys[i].value) || 0;
+          const p = parseFloat(prices[i].value) || 0;
+          const o = parseFloat(ongkirs[i].value) || 0;
+          const total = q * p + o;
           subtotal += total;
 
           const tr = document.createElement("tr");
-          tr.className = i % 2 === 0 ? "bg-light-navy-bg" : "";
           tr.innerHTML = `
-            <td>${name}</td>
-            <td>${color}</td>
-            <td class="text-right">${qty}</td>
-            <td class="text-right">Rp${price.toLocaleString()}</td>
-            <td class="text-right">Rp${ongkir.toLocaleString()}</td>
-            <td class="text-right">Rp${total.toLocaleString()}</td>
-          `;
+      <td>${n}</td>
+      <td>${c}</td>
+      <td class="text-right">${q}</td>
+      <td class="text-right">Rp${p.toLocaleString()}</td>
+      <td class="text-right">Rp${o.toLocaleString()}</td>
+      <td class="text-right">Rp${total.toLocaleString()}</td>
+    `;
           tbody.appendChild(tr);
         }
 
@@ -297,19 +297,20 @@
           "Rp" + subtotal.toLocaleString();
         document.getElementById("total").textContent =
           "Rp" + subtotal.toLocaleString();
-        showLunas
-          ? document.getElementById("stampLunas").classList.remove("hidden")
-          : document.getElementById("stampLunas").classList.add("hidden");
+        document
+          .getElementById("stampLunas")
+          .classList.toggle("hidden", !showLunas);
 
-        const invoice = document.getElementById("invoicePreview");
-        const opt = {
-          margin: 5,
-          filename: filename,
-          image: { type: "jpeg", quality: 1 },
-          html2canvas: { scale: 3, width: invoice.scrollWidth },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        };
-        html2pdf().set(opt).from(invoice).save();
+        html2pdf()
+          .set({
+            margin: 5,
+            filename: filename,
+            image: { type: "jpeg", quality: 1 },
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          })
+          .from(document.getElementById("invoicePreview"))
+          .save();
       }
 
       document
