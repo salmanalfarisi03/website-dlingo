@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice Hijab Dlingo Scarves</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+      body {
+        font-family: "Helvetica", sans-serif;
+      }
+      .navy-text {
+        color: #0b3d91;
+      }
+      .navy-bg {
+        background-color: #0b3d91;
+      }
+      .light-navy-bg {
+        background-color: #e6ebf5;
+      }
+      .stamp-lunas {
+        color: #ff0000;
+        font-size: 4rem;
+        font-weight: bold;
+        opacity: 0.7;
+        transform: rotate(-15deg);
+        display: inline-block;
+      }
+      .total-black {
+        color: #000000;
+      }
+    </style>
+  </head>
+  <body class="bg-light-navy-bg p-8">
+    <div class="max-w-6xl mx-auto mb-6">
+      <h2 class="text-3xl font-bold mb-4 navy-text">
+        Isi Invoice Toko Hijab Dlingoscarves
+      </h2>
+
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <input
+          type="text"
+          id="billName"
+          placeholder="Nama Penerima"
+          class="border px-3 py-2 rounded w-full"
+        />
+        <input
+          type="text"
+          id="billAddress"
+          placeholder="Alamat Penerima"
+          class="border px-3 py-2 rounded w-full"
+        />
+        <input
+          type="text"
+          id="invoiceDate"
+          placeholder="Tanggal Invoice"
+          class="border px-3 py-2 rounded w-full"
+        />
+        <input
+          type="text"
+          id="dueDate"
+          placeholder="Tanggal Jatuh Tempo"
+          class="border px-3 py-2 rounded w-full"
+        />
+      </div>
+
+      <h3 class="font-semibold mb-2 navy-text">Produk Hijab</h3>
+      <div id="itemsContainer" class="mb-4">
+        <div class="flex gap-2 mb-2">
+          <input
+            type="text"
+            placeholder="Jenis Hijab"
+            class="border px-3 py-2 rounded w-1/3 item-name"
+          />
+          <input
+            type="text"
+            placeholder="Warna / Motif"
+            class="border px-3 py-2 rounded w-1/3 item-color"
+          />
+          <input
+            type="number"
+            placeholder="Jumlah"
+            class="border px-3 py-2 rounded w-1/6 item-qty"
+          />
+          <input
+            type="number"
+            placeholder="Harga (Rp)"
+            class="border px-3 py-2 rounded w-1/6 item-price"
+          />
+          <input
+            type="ongkir"
+            placeholder="Ongkir (Rp)"
+            class="border px-3 py-2 rounded w-1/6 item-price"
+          />
+        </div>
+      </div>
+      <button
+        id="addItem"
+        class="mb-4 navy-bg text-white px-4 py-2 rounded hover:bg-blue-800"
+      >
+        Tambah Produk
+      </button>
+    </div>
+
+    <div class="text-center mb-6">
+      <button
+        id="generateInvoiceTagihan"
+        class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800 mr-2"
+      >
+        Generate PDF Tagihan
+      </button>
+      <button
+        id="generateInvoicePelunasan"
+        class="navy-bg text-white px-6 py-2 rounded hover:bg-blue-800"
+      >
+        Generate PDF Pelunasan
+      </button>
+    </div>
+
+    <!-- Invoice Preview -->
+    <div
+      id="invoicePreview"
+      class="max-w-6xl mx-auto bg-white p-8 shadow-2xl rounded-lg relative"
+    >
+      <!-- Watermark -->
+      <div
+        class="absolute inset-0 flex justify-center items-center pointer-events-none opacity-5"
+      >
+        <img src="img/dlingo.jpeg" alt="Watermark" class="w-96" />
+      </div>
+
+      <!-- Header -->
+      <div
+        class="flex justify-between items-center border-b-4 border-black pb-4 mb-6 relative z-10"
+      >
+        <div class="flex items-center gap-4">
+          <img src="img/dlingo.jpeg" alt="Logo Toko" class="h-20" />
+          <div>
+            <h1 class="text-3xl font-bold navy-text">INVOICE</h1>
+            <p class="text-gray-600 mt-1" id="invoiceNumber">#INV-001</p>
+          </div>
+        </div>
+        <div class="text-right text-sm text-gray-700">
+          <p>Toko Hijab Dlingoscarves</p>
+          <p>Jakarta</p>
+          <p>Instagram: @Dlingoscarves</p>
+        </div>
+      </div>
+
+      <!-- Billing Info -->
+      <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
+        <div>
+          <h2 class="font-semibold navy-text">Bill To:</h2>
+          <p id="previewName">Nama Penerima</p>
+          <p id="previewAddress">Alamat Penerima</p>
+        </div>
+        <div>
+          <h2 class="font-semibold navy-text">Invoice Info:</h2>
+          <p id="previewDate">Tanggal</p>
+          <p id="previewDue">Due Date</p>
+        </div>
+      </div>
+
+      <!-- Table Produk -->
+      <table class="w-full border-collapse mb-6 text-sm relative z-10">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="border px-4 py-2 text-left">Nama Hijab</th>
+            <th class="border px-4 py-2 text-left">Warna / Motif</th>
+            <th class="border px-4 py-2 text-right">Jumlah</th>
+            <th class="border px-4 py-2 text-right">Harga</th>
+            <th class="border px-4 py-2 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody id="previewTable"></tbody>
+      </table>
+
+      <!-- Total + Stempel LUNAS -->
+      <div class="flex flex-col items-end relative z-10">
+        <div class="text-right mb-4">
+          <p class="font-semibold mt-2">
+            Subtotal: <span id="subtotal">0</span>
+          </p>
+          <p class="font-semibold mt-4">Ongkir: <span id="ongkir">0</span></p>
+          <p class="font-bold text-xl total-black mt-4">
+            Total: <span id="total">0</span>
+          </p>
+        </div>
+
+        <!-- Stempel LUNAS -->
+        <div id="stampLunas" class="text-right mb-4 hidden">
+          <span class="stamp-lunas">LUNAS</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <p class="mt-6 text-gray-700 relative z-10">
+        Thank you for your order.<br />
+        Pembayaran dapat dilakukan ke:<br />
+        Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih<br />
+        Instagram: @Dlingoscarves | telfon: 0857-1825-1218
+      </p>
+    </div>
+
+    <script>
+      const addItemBtn = document.getElementById("addItem");
+      const itemsContainer = document.getElementById("itemsContainer");
+
+      addItemBtn.addEventListener("click", () => {
+        const div = document.createElement("div");
+        div.className = "flex gap-2 mb-2";
+        div.innerHTML = `
+          <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-1/3 item-name">
+          <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-1/3 item-color">
+          <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/6 item-qty">
+          <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/6 item-price">
+        `;
+        itemsContainer.appendChild(div);
+      });
+
+      function generatePDF(filename, showLunas) {
+        document.getElementById("previewName").textContent =
+          document.getElementById("billName").value || "Nama Penerima";
+        document.getElementById("previewAddress").textContent =
+          document.getElementById("billAddress").value || "Alamat Penerima";
+        document.getElementById("previewDate").textContent =
+          document.getElementById("invoiceDate").value || "-";
+        document.getElementById("previewDue").textContent =
+          document.getElementById("dueDate").value || "-";
+
+        const tbody = document.getElementById("previewTable");
+        tbody.innerHTML = "";
+        let subtotal = 0;
+        const names = document.querySelectorAll(".item-name");
+        const colors = document.querySelectorAll(".item-color");
+        const qtys = document.querySelectorAll(".item-qty");
+        const prices = document.querySelectorAll(".item-price");
+
+        for (let i = 0; i < names.length; i++) {
+          const name = names[i].value || "-";
+          const color = colors[i].value || "-";
+          const qty = parseFloat(qtys[i].value) || 0;
+          const price = parseFloat(prices[i].value) || 0;
+          const total = qty * price;
+          subtotal += total;
+
+          const tr = document.createElement("tr");
+          tr.className = i % 2 === 0 ? "bg-light-navy-bg" : "";
+          tr.innerHTML = `
+            <td class="border px-4 py-2">${name}</td>
+            <td class="border px-4 py-2">${color}</td>
+            <td class="border px-4 py-2 text-right">${qty}</td>
+            <td class="border px-4 py-2 text-right">Rp${price.toLocaleString()}</td>
+            <td class="border px-4 py-2 text-right">Rp${total.toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        const total = subtotal;
+        document.getElementById("subtotal").textContent =
+          "Rp" + subtotal.toLocaleString();
+        document.getElementById("total").textContent =
+          "Rp" + total.toLocaleString();
+
+        const stamp = document.getElementById("stampLunas");
+        if (showLunas) {
+          stamp.classList.remove("hidden");
+        } else {
+          stamp.classList.add("hidden");
+        }
+
+        const invoice = document.getElementById("invoicePreview");
+        const opt = {
+          margin: 0.5,
+          filename: filename,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        };
+        html2pdf().set(opt).from(invoice).save();
+      }
+
+      document
+        .getElementById("generateInvoiceTagihan")
+        .addEventListener("click", () => {
+          generatePDF("Tagihan.pdf", false);
+        });
+
+      document
+        .getElementById("generateInvoicePelunasan")
+        .addEventListener("click", () => {
+          generatePDF("Pelunasan.pdf", true);
+        });
+    </script>
+  </body>
+</html>
