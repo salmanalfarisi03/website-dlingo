@@ -43,14 +43,20 @@
       input {
         outline: none;
       }
-      /* ✅ Supaya footer ga kepotong */
+
+      /* ✅ Supaya footer selalu ikut di PDF */
       #invoiceFooter {
         page-break-inside: avoid;
         page-break-after: auto;
+        position: relative;
+        bottom: 0;
+        left: 0;
+        right: 0;
       }
     </style>
   </head>
   <body class="p-4 sm:p-8">
+    <!-- (Tampilan HTML tetap sama persis seperti yang mas kasih) -->
     <div class="max-w-6xl mx-auto mb-6">
       <h2 class="text-2xl sm:text-3xl font-bold mb-4 navy-text">
         Isi Invoice Toko Hijab Dlingoscarves
@@ -208,7 +214,7 @@
         </div>
       </div>
 
-      <!-- ✅ Footer aman -->
+      <!-- ✅ Footer ikut di PDF -->
       <div id="invoiceFooter" class="mt-6 text-gray-700 text-sm sm:text-base">
         <p>
           Thank you for your order.<br />
@@ -229,7 +235,6 @@
           "INC-" + String(invoiceNumber).padStart(3, "0");
       }
 
-      // Reset nomor invoice
       function resetInvoiceNumber() {
         invoiceNumber = 1;
         localStorage.setItem("invoiceNumber", invoiceNumber);
@@ -237,7 +242,6 @@
         alert("Nomor invoice sudah direset ke 1");
       }
 
-      // Tambah item
       addItemBtn.addEventListener("click", () => {
         const div = document.createElement("div");
         div.className = "flex flex-wrap gap-2 mb-2";
@@ -251,7 +255,6 @@
         itemsContainer.appendChild(div);
       });
 
-      // Update preview
       function updatePreview() {
         document.getElementById("previewName").textContent =
           document.getElementById("billName").value || "-";
@@ -269,7 +272,6 @@
       updatePreview();
       updateInvoiceNumber();
 
-      // Generate PDF
       function generatePDF(filename, showLunas) {
         updatePreview();
         updateInvoiceNumber();
@@ -315,7 +317,7 @@
 
         html2pdf()
           .set({
-            margin: 5,
+            margin: [10, 10, 20, 10], // ✅ kasih space bawah untuk footer
             filename: filename,
             image: { type: "jpeg", quality: 1 },
             html2canvas: { scale: 3 },
