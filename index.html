@@ -44,19 +44,14 @@
         outline: none;
       }
 
-      /* ✅ Supaya footer selalu ikut di PDF */
+      /* biarkan style footer tetap di DOM untuk tampilan, tapi saat capture kita akan sembunyikan sesaat */
       #invoiceFooter {
         page-break-inside: avoid;
         page-break-after: auto;
-        position: relative;
-        bottom: 0;
-        left: 0;
-        right: 0;
       }
     </style>
   </head>
   <body class="p-4 sm:p-8">
-    <!-- (Tampilan HTML tetap sama persis seperti yang mas kasih) -->
     <div class="max-w-6xl mx-auto mb-6">
       <h2 class="text-2xl sm:text-3xl font-bold mb-4 navy-text">
         Isi Invoice Toko Hijab Dlingoscarves
@@ -214,7 +209,7 @@
         </div>
       </div>
 
-      <!-- ✅ Footer ikut di PDF -->
+      <!-- Footer (tetap di DOM untuk tampilan) -->
       <div id="invoiceFooter" class="mt-6 text-gray-700 text-sm sm:text-base">
         <p>
           Thank you for your order.<br />
@@ -272,6 +267,7 @@
       updatePreview();
       updateInvoiceNumber();
 
+      // ----- Perbaikan utama: render PDF, lalu tambahkan footer di setiap halaman (programatik) -----
       function generatePDF(filename, showLunas) {
         updatePreview();
         updateInvoiceNumber();
@@ -315,20 +311,66 @@
           .getElementById("stampLunas")
           .classList.toggle("hidden", !showLunas);
 
-        html2pdf()
-          .set({
-            margin: [10, 10, 20, 10], // ✅ kasih space bawah untuk footer
-            filename: filename,
-            image: { type: "jpeg", quality: 1 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-            pagebreak: { mode: ["css", "legacy"] },
-          })
-          .from(document.getElementById("invoicePreview"))
-          .save();
+        // Sembunyikan footer DOM sementara agar tidak ikut sebagai gambar statis di canvas
+        const footerEl = document.getElementById("invoiceFooter");
+        const prevDisplay = footerEl.style.display || "";
+        footerEl.style.display = "none";
 
-        invoiceNumber++;
-        localStorage.setItem("invoiceNumber", invoiceNumber);
+        // Opsi: beri margin bawah lebih besar supaya ruang footer tidak menimpa isi
+        const opt = {
+          margin: [10, 10, 30, 10], // top, left, bottom, right (mm)
+          filename: filename,
+          image: { type: "jpeg", quality: 1 },
+          html2canvas: { scale: 3, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"] },
+        };
+
+        // Gunakan toPdf().get('pdf') agar kita bisa menambahkan footer ke setiap halaman programatik
+        html2pdf()
+          .set(opt)
+          .from(document.getElementById("invoicePreview"))
+          .toPdf()
+          .get("pdf")
+          .then(function (pdf) {
+            // Tambahkan footer ke setiap halaman
+            const totalPages = pdf.internal.getNumberOfPages();
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            // Footer text (bisa diubah sesuai kebutuhan)
+            const footerLines = [
+              "Thank you for your order.",
+              "Pembayaran dapat dilakukan ke: Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih",
+              "Instagram: @Dlingoscarves | telfon: 0857-1825-1218",
+            ];
+
+            pdf.setFontSize(10);
+            for (let i = 1; i <= totalPages; i++) {
+              pdf.setPage(i);
+              // Gabungkan lines jadi satu array yang sudah membungkus sesuai lebar halaman
+              const text = footerLines.join("\n");
+              const split = pdf.splitTextToSize(text, pageWidth - 20); // beri padding kiri/kanan 10mm
+              // hitung posisi start Y supaya footer berada dekat bawah (dengan margin)
+              const lineHeight = 5; // mm per baris
+              const yStart = pageHeight - 15 - (split.length - 1) * lineHeight; // 15mm dari bawah + adjust
+              pdf.text(split, pageWidth / 2, yStart, { align: "center" });
+            }
+
+            // Simpan PDF yang sudah dimodifikasi
+            pdf.save(filename);
+          })
+          .catch(function (err) {
+            console.error("Error generating PDF:", err);
+            alert("Gagal membuat PDF (cek console).");
+          })
+          .finally(function () {
+            // restore footer DOM display
+            footerEl.style.display = prevDisplay;
+            // update nomor invoice setelah proses
+            invoiceNumber++;
+            localStorage.setItem("invoiceNumber", invoiceNumber);
+          });
       }
 
       document
