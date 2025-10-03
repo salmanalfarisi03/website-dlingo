@@ -43,6 +43,12 @@
       input {
         outline: none;
       }
+
+      /* Supaya footer selalu ikut ke halaman terakhir */
+      #invoiceFooter {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
     </style>
   </head>
   <body class="p-4 sm:p-8">
@@ -194,12 +200,15 @@
         </div>
       </div>
 
-      <p class="mt-6 text-gray-700 text-sm sm:text-base">
-        Thank you for your order.<br />
-        Pembayaran dapat dilakukan ke:<br />
-        Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih<br />
-        Instagram: @Dlingoscarves | telfon: 0857-1825-1218
-      </p>
+      <!-- FOOTER -->
+      <div id="invoiceFooter" class="mt-6 text-gray-700 text-sm sm:text-base">
+        <p>
+          Thank you for your order.<br />
+          Pembayaran dapat dilakukan ke:<br />
+          Bank BCA 1661739679 | Bank Jakarta 50020082764: a/n Pancaningsih<br />
+          Instagram: @Dlingoscarves | telfon: 0857-1825-1218
+        </p>
+      </div>
     </div>
 
     <script>
@@ -219,12 +228,12 @@
         const div = document.createElement("div");
         div.className = "flex flex-wrap gap-2 mb-2";
         div.innerHTML = `
-    <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
-    <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
-    <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
-    <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
-    <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
-  `;
+          <input type="text" placeholder="Jenis Hijab" class="border px-3 py-2 rounded w-full sm:w-1/4 item-name">
+          <input type="text" placeholder="Warna / Motif" class="border px-3 py-2 rounded w-full sm:w-1/4 item-color">
+          <input type="number" placeholder="Jumlah" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-qty">
+          <input type="number" placeholder="Harga (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-price">
+          <input type="number" placeholder="Ongkir (Rp)" class="border px-3 py-2 rounded w-1/2 sm:w-1/8 item-ongkir">
+        `;
         itemsContainer.appendChild(div);
       });
 
@@ -283,13 +292,13 @@
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
-      <td>${n}</td>
-      <td>${c}</td>
-      <td class="text-right">${q}</td>
-      <td class="text-right">Rp${p.toLocaleString()}</td>
-      <td class="text-right">Rp${o.toLocaleString()}</td>
-      <td class="text-right">Rp${total.toLocaleString()}</td>
-    `;
+            <td>${n}</td>
+            <td>${c}</td>
+            <td class="text-right">${q}</td>
+            <td class="text-right">Rp${p.toLocaleString()}</td>
+            <td class="text-right">Rp${o.toLocaleString()}</td>
+            <td class="text-right">Rp${total.toLocaleString()}</td>
+          `;
           tbody.appendChild(tr);
         }
 
@@ -308,7 +317,7 @@
             image: { type: "jpeg", quality: 1 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-            pagebreak: { mode: "avoid-all" }, // Fitur multi-halaman diaktifkan
+            pagebreak: { mode: ["css", "legacy"] }, // FIX supaya footer ikut
           })
           .from(document.getElementById("invoicePreview"))
           .save();
@@ -323,4 +332,3 @@
     </script>
   </body>
 </html>
-
