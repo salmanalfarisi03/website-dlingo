@@ -43,8 +43,7 @@
       input {
         outline: none;
       }
-
-      /* Supaya footer selalu ikut ke halaman terakhir */
+      /* ✅ Supaya footer ga kepotong */
       #invoiceFooter {
         page-break-inside: avoid;
         page-break-after: auto;
@@ -123,6 +122,7 @@
       </button>
     </div>
 
+    <!-- Tombol Action -->
     <div
       class="text-center mb-6 flex flex-col sm:flex-row justify-center gap-2"
     >
@@ -140,8 +140,16 @@
       >
         Generate PDF Pelunasan
       </button>
+      <button
+        type="button"
+        onclick="resetInvoiceNumber()"
+        class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800"
+      >
+        Reset Nomor Invoice
+      </button>
     </div>
 
+    <!-- Preview Invoice -->
     <div
       id="invoicePreview"
       class="max-w-[210mm] mx-auto bg-white p-4 sm:p-8 shadow-2xl rounded-lg relative"
@@ -200,7 +208,7 @@
         </div>
       </div>
 
-      <!-- FOOTER -->
+      <!-- ✅ Footer aman -->
       <div id="invoiceFooter" class="mt-6 text-gray-700 text-sm sm:text-base">
         <p>
           Thank you for your order.<br />
@@ -214,13 +222,19 @@
     <script>
       const addItemBtn = document.getElementById("addItem");
       const itemsContainer = document.getElementById("itemsContainer");
-      let lastInvoiceNumber = localStorage.getItem("lastInvoiceNumber") || "0";
+      let invoiceNumber = parseInt(localStorage.getItem("invoiceNumber")) || 1;
 
-      function getNextInvoiceNumber() {
-        let nextNumber = parseInt(lastInvoiceNumber) + 1;
-        lastInvoiceNumber = nextNumber;
-        localStorage.setItem("lastInvoiceNumber", lastInvoiceNumber);
-        return "INC-" + String(nextNumber).padStart(3, "0");
+      function updateInvoiceNumber() {
+        document.getElementById("invoiceNumber").textContent =
+          "INC-" + String(invoiceNumber).padStart(3, "0");
+      }
+
+      // Reset nomor invoice
+      function resetInvoiceNumber() {
+        invoiceNumber = 1;
+        localStorage.setItem("invoiceNumber", invoiceNumber);
+        updateInvoiceNumber();
+        alert("Nomor invoice sudah direset ke 1");
       }
 
       // Tambah item
@@ -237,7 +251,7 @@
         itemsContainer.appendChild(div);
       });
 
-      // update preview
+      // Update preview
       function updatePreview() {
         document.getElementById("previewName").textContent =
           document.getElementById("billName").value || "-";
@@ -249,32 +263,21 @@
           document.getElementById("dueDate").value || "-";
       }
 
-      // Realtime update
-      document
-        .getElementById("billName")
-        .addEventListener("input", updatePreview);
-      document
-        .getElementById("billAddress")
-        .addEventListener("input", updatePreview);
-      document
-        .getElementById("invoiceDate")
-        .addEventListener("input", updatePreview);
-      document
-        .getElementById("dueDate")
-        .addEventListener("input", updatePreview);
-
-      // supaya preview muncul langsung
+      ["billName", "billAddress", "invoiceDate", "dueDate"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", updatePreview);
+      });
       updatePreview();
+      updateInvoiceNumber();
 
       // Generate PDF
       function generatePDF(filename, showLunas) {
         updatePreview();
-        document.getElementById("invoiceNumber").textContent =
-          getNextInvoiceNumber();
+        updateInvoiceNumber();
 
         const tbody = document.getElementById("previewTable");
         tbody.innerHTML = "";
         let subtotal = 0;
+
         const names = document.querySelectorAll(".item-name");
         const colors = document.querySelectorAll(".item-color");
         const qtys = document.querySelectorAll(".item-qty");
@@ -317,10 +320,13 @@
             image: { type: "jpeg", quality: 1 },
             html2canvas: { scale: 3 },
             jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-            pagebreak: { mode: ["css", "legacy"] }, // FIX supaya footer ikut
+            pagebreak: { mode: ["css", "legacy"] },
           })
           .from(document.getElementById("invoicePreview"))
           .save();
+
+        invoiceNumber++;
+        localStorage.setItem("invoiceNumber", invoiceNumber);
       }
 
       document
