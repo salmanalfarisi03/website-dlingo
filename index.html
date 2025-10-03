@@ -228,7 +228,7 @@
         itemsContainer.appendChild(div);
       });
 
-      // Fungsi update preview
+      // update preview
       function updatePreview() {
         document.getElementById("previewName").textContent =
           document.getElementById("billName").value || "-";
@@ -254,7 +254,7 @@
         .getElementById("dueDate")
         .addEventListener("input", updatePreview);
 
-      // Jalankan saat load supaya preview muncul langsung
+      // supaya preview muncul langsung
       updatePreview();
 
       // Generate PDF
@@ -323,3 +323,4 @@
     </script>
   </body>
 </html>
+
